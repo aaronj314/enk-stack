@@ -1,0 +1,123 @@
+version: "3.5"
+services:
+  neo4j:
+    image: neo4j:latest
+    networks:
+    - esnet
+    ports:
+    - "7474:7474"
+    - "7687:7687"
+    ulimits:
+      nofile:
+        soft: 40000
+        hard: 40000
+    environment:
+    - NEO4J_AUTH=neo4j/test1234
+    - NEO4J_dbms_security_procedures_unrestricted=apoc_*
+    - NEO4J_apoc_import_file_enabled=true
+    - NEO4J_apoc_export_file_enabled=true
+    - NEO4J_dbms_shell_enabled=true
+    - NEO4J_apoc_import_file_use__neo4j__config=true
+    - NEO4J_elasticsearch_host__name=http://elasticsearch:9200
+    - NEO4J_elasticsearch_index__spec=users:User(email)
+    - NEO4J_dbms_unmanaged__extension__classes=com.graphaware.server=/graphaware
+    - NEO4J_com_graphaware_runtime_enabled=true
+    - NEO4J_com_graphaware_module_UIDM_1=com.graphaware.module.uuid.UuidBootstrapper
+    - NEO4J_com_graphaware_module_UIDM_initializeUntil=3697605600000
+    - NEO4J_com_graphaware_module_ES_2=com.graphaware.module.es.ElasticSearchModuleBootstrapper
+    - NEO4J_com_graphaware_module_ES_uri=elasticsearch
+    - NEO4J_com_graphaware_module_ES_port=9200
+    - NEO4J_com_graphaware_module_ES_index=neo4j-index
+    volumes:
+    - $PWD/neo4j/plugins:/plugins
+    - neodata:/data
+    - $PWD/neo4j/import:/import
+    depends_on:
+    - elasticsearch
+
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.2
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    environment:
+    - cluster.name=single-docker
+    - discovery.type=single-node
+    - http.cors.allow-origin=http://localhost:1358
+    - http.cors.enabled=true
+    - http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
+    - http.cors.allow-credentials=true
+    - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+    volumes:
+    - esdata:/usr/share/elasticsearch/data
+    ports:
+    - 9200:9200
+    - 9300:9300
+    networks:
+    - esnet
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.5.2
+    ports:
+      - "5601:5601"
+    links:
+    - elasticsearch
+    environment:
+      SERVER_NAME: kibana.example.org
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    depends_on:
+    - elasticsearch
+    networks:
+    - esnet
+#  dejavu:
+#    image: appbaseio/dejavu:latest
+#    container_name: dejavu
+#    ports:
+#    - "1358:1358"
+#    links:
+#    - elasticsearch
+#    networks:
+#    - esnet
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+#    environment:
+#    - cluster.name=docker-cluster
+#    - bootstrap.memory_lock=true
+#    - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#    volumes:
+#    - $HOME/elasticsearch/data1:/usr/share/elasticsearch/data
+#    ports:
+#    - 9200:9200
+#    - 9300:9300
+#    networks:
+#    - esnet
+#  elasticsearch2:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+#    environment:
+#    - cluster.name=docker-cluster
+#    - bootstrap.memory_lock=true
+#    - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#    - "discovery.zen.ping.unicast.hosts=elasticsearch"
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#    volumes:
+#    - $HOME/elasticsearch/data2:/usr/share/elasticsearch/data
+#    networks:
+#    - esnet
+
+networks:
+  esnet:
+
+volumes:
+  esdata:
+  neodata:
+  neoplugins:
+  neoimports:
