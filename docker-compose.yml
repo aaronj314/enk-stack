@@ -1,7 +1,7 @@
 version: "3.5"
 services:
   neo4j:
-    image: neo4j:latest
+    image: neo4j:3.5
     networks:
     - esnet
     ports:
@@ -31,7 +31,7 @@ services:
     volumes:
     - $PWD/neo4j/plugins:/plugins
     - neodata:/data
-    - $PWD/neo4j/import:/import
+    # - $PWD/neo4j/import:/import
     depends_on:
     - elasticsearch
 
@@ -119,5 +119,5 @@ networks:
 volumes:
   esdata:
   neodata:
-  neoplugins:
-  neoimports:
+  # neoplugins:
+  # neoimports:
