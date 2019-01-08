@@ -1,0 +1,32 @@
+{
+  "defaults": {
+    "key_property": "uuid",
+    "nodes_index": "default-index-node",
+    "relationships_index": "default-index-relationship",
+    "include_remaining_properties": true
+  },
+  "node_mappings": [
+    {
+      "condition": "hasLabel('Drill')",
+      "type": "drills",
+      "index": "nodes-drills",
+      "properties": {
+        "name": "getProperty('name') + ' (' + getProperty('type')+')'"
+      }
+    },
+    {
+      "condition": "hasLabel('Happening')",
+      "type": "happening",
+      "index": "nodes-happening",
+      "properties": {
+        "name": "getProperty('name') + ' (' + getProperty('type')+')'"
+      }
+    }
+  ],
+  "relationship_mappings": [
+    {
+      "condition": "isType('WORKS_FOR')",
+      "type": "workers"
+    }
+  ]
+}

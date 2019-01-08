@@ -12,6 +12,7 @@ services:
         soft: 40000
         hard: 40000
     environment:
+    - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
     - NEO4J_AUTH=neo4j/test1234
     - NEO4J_dbms_security_procedures_unrestricted=apoc_*
     - NEO4J_apoc_import_file_enabled=true
@@ -28,12 +29,16 @@ services:
     - NEO4J_com_graphaware_module_ES_uri=elasticsearch
     - NEO4J_com_graphaware_module_ES_port=9200
     - NEO4J_com_graphaware_module_ES_index=neo4j-index
+    - NEO4J_com_graphaware_module_ES_bulk=false
+    - NEO4J_com_graphaware_module_ES_mapping=com.graphaware.module.es.mapping.JsonFileMapping
+    - NEO4J_com_graphaware_module_ES_file=mapping.json
     volumes:
     - $PWD/neo4j/plugins:/plugins
     - neodata:/data
-    # - $PWD/neo4j/import:/import
-    depends_on:
-    - elasticsearch
+    - $PWD/neo4j/conf:/conf
+    - $PWD/neo4j/import:/import
+    # depends_on:
+    # - elasticsearch
 
 
   elasticsearch:
