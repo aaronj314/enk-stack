@@ -18,15 +18,15 @@
       "condition": "hasLabel('Happening')",
       "type": "happening",
       "index": "nodes-happening",
-      "properties": {
-        "name": "getProperty('name') + ' (' + getProperty('type')+')'"
+      "properties":{
+        "items": "query('match (h:Happening)-[:HAPPENING_ITEM]->(d:Drill) where id(h)={id} return collect(d.name) as value')"
       }
     }
   ],
   "relationship_mappings": [
     {
-      "condition": "isType('WORKS_FOR')",
-      "type": "workers"
+      "condition": "isType('HAPPENING_ITEM')",
+      "type": "happening_item"
     }
   ]
 }
